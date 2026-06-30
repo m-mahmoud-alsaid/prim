@@ -200,3 +200,42 @@ func (ch *CategoryHandler) GetCategoryBySlug(c *gin.Context) {
 		},
 	)
 }
+
+// ListCategories godco
+// @Summary list all categories
+// @Description list all categories
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Failure 500 {object} api.ErrorResponse
+// @Router /categories [get]
+func (ch *CategoryHandler) ListCategories(c *gin.Context) {
+
+	ctx := c.Request.Context()
+	categories, err := ch.cservice.List(
+		ctx,
+	)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	var res []*CategoryResponse
+	for _, c := range categories {
+		res = append(res, &CategoryResponse{
+			ID:        c.ID,
+			Name:      c.Name,
+			Slug:      c.Slug,
+			ParentID:  c.ParentID,
+			CreatedAt: c.CreatedAt.Format(time.RFC3339),
+			UpdatedAt: c.UpdatedAt.Format(time.RFC3339),
+		})
+	}
+
+	c.JSON(
+		http.StatusOK,
+		api.DataResponse{
+			Data: res,
+		},
+	)
+}

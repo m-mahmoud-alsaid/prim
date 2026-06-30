@@ -115,3 +115,56 @@ func (cr *CategoryRepository) Get(
 
 	return &category, nil
 }
+
+func (cr *CategoryRepository) List(
+	ctx context.Context,
+	qe database.QueryExecutor,
+) ([]*model.Category, error) {
+	query := `
+	SELECT
+		id,
+		name,
+		slug,
+		parent_id,
+		created_at,
+		updated_at
+	FROM
+		categories
+	WHERE
+		deleted_at IS NULL
+	`
+
+	rows, err := qe.Query(
+		ctx,
+		query,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("list categories: %w", err)
+	}
+
+	var result []*model.Category
+	for rows.Next() {
+		var c model.Category
+		err = rows.Scan(
+			&c.ID,
+			&c.Name,
+			&c.Slug,
+			&c.ParentID,
+			&c.CreatedAt,
+			&c.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("list categories: %w", err)
+		}
+		result = append(
+			result,
+			&c,
+		)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("list categories: %w", err)
+	}
+
+	return result, nil
+}

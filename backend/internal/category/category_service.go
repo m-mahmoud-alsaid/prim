@@ -175,3 +175,33 @@ func (cs *CategoryService) GetCategoryBySlug(
 
 	return category, nil
 }
+
+func (cs *CategoryService) List(
+	ctx context.Context,
+) ([]*model.Category, error) {
+	var res []*model.Category
+	err := cs.qexecuter.WithDB(ctx, func(db database.QueryExecutor) error {
+		categories, err := cs.crepository.List(
+			ctx,
+			db,
+		)
+		if err != nil {
+			return err
+		}
+		res = categories
+		return nil
+	})
+	if err != nil {
+		// mappedError := database.MapError(err)
+		switch {
+		default:
+			return nil, security.NewSecureError(
+				http.StatusInternalServerError,
+				security.CodeInternal,
+				"failed to fetch the categories",
+				err,
+			)
+		}
+	}
+	return res, nil
+}
