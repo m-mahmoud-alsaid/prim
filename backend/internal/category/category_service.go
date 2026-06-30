@@ -79,3 +79,99 @@ func (cs *CategoryService) CreateCategory(
 	}
 	return category, err
 }
+
+func (cs *CategoryService) GetCategoryByID(
+	ctx context.Context,
+	categoryID uuid.UUID,
+) (*model.Category, error) {
+	var category *model.Category
+	err := cs.qexecuter.WithDB(ctx, func(db database.QueryExecutor) error {
+		c, err := cs.crepository.Get(
+			ctx,
+			db,
+			Filter{
+				ID: &categoryID,
+			},
+		)
+
+		if err != nil {
+			return err
+		}
+
+		category = c
+		return nil
+	})
+
+	if err != nil {
+		mappedErr := database.MapError(err)
+		switch {
+		case errors.Is(
+			mappedErr,
+			database.ErrNotFound,
+		):
+			return nil, security.NewSecureError(
+				http.StatusNotFound,
+				security.CodeNotFound,
+				"resource not found",
+				err,
+			)
+		default:
+			return nil, security.NewSecureError(
+				http.StatusInternalServerError,
+				security.CodeInternal,
+				"failed to fetch the resource",
+				err,
+			)
+		}
+	}
+
+	return category, nil
+}
+
+func (cs *CategoryService) GetCategoryBySlug(
+	ctx context.Context,
+	slug string,
+) (*model.Category, error) {
+	var category *model.Category
+	err := cs.qexecuter.WithDB(ctx, func(db database.QueryExecutor) error {
+		c, err := cs.crepository.Get(
+			ctx,
+			db,
+			Filter{
+				Slug: &slug,
+			},
+		)
+
+		if err != nil {
+			return err
+		}
+
+		category = c
+		return nil
+	})
+
+	if err != nil {
+		mappedErr := database.MapError(err)
+		switch {
+		case errors.Is(
+			mappedErr,
+			database.ErrNotFound,
+		):
+			return nil, security.NewSecureError(
+				http.StatusNotFound,
+				security.CodeNotFound,
+				"resource not found",
+				err,
+			)
+		default:
+			return nil, security.NewSecureError(
+				http.StatusInternalServerError,
+				security.CodeInternal,
+				"failed to fetch the resource",
+				err,
+			)
+		}
+	}
+
+	return category, nil
+}

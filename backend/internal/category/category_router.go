@@ -18,5 +18,7 @@ func (cr *CategoryRouter) MapRoutes(
 	vgroup *gin.RouterGroup,
 ) {
 	categories := vgroup.Group("/categories")
+	categories.GET("/:id", cr.chandler.GetCategoryByID)
+	categories.GET("/slug/:slug", cr.chandler.GetCategoryBySlug)
 	categories.POST("", cr.chandler.CreateCategory)
 }

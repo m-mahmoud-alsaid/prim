@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/m-mahmoud-alsaid/prim-backend/internal/shared/validation"
 	"github.com/m-mahmoud-alsaid/prim-backend/pkg/api"
+	"github.com/m-mahmoud-alsaid/prim-backend/pkg/api/security"
 )
 
 type CategoryHandler struct {
@@ -23,19 +24,22 @@ func NewHandler(
 }
 
 type CreateCategoryRequest struct {
-	Name     string     `json:"name" binding:"required"`
-	ParentID *uuid.UUID `json:"parent_id" binding:"omitempty,uuid"`
+	Name     string `json:"name" binding:"required" example:"electronic"`
+	ParentID string `json:"parent_id" binding:"omitempty,uuid" example:"c8ccec1c-ded5-4380-9f78-a1d4eb3d4f28"`
 }
 
-type CreateCategoryResponse struct {
-	ID        uuid.UUID  `json:"id"`
-	Name      string     `json:"name"`
-	Slug      string     `json:"slug"`
-	ParentID  *uuid.UUID `json:"parent_id"`
-	CreatedAt string     `json:"created_at"`
-	UpdatedAt string     `json:"updated_at"`
-}
-
+// CreateCategory godoc
+// @Summary create a new category
+// @Description create a new category
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param body body CreateCategoryRequest true "Category Data "
+// @Failure 400 {object} api.ErrorResponse
+// @Failure 404 {object} api.ErrorResponse
+// @Failure 500 {object} api.ErrorResponse
+// @Success 201 {object} api.DataResponse{data=CategoryResponse}
+// @Router /categories [post]
 func (ch *CategoryHandler) CreateCategory(c *gin.Context) {
 	var req CreateCategoryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -43,9 +47,15 @@ func (ch *CategoryHandler) CreateCategory(c *gin.Context) {
 		return
 	}
 
+	ppID, err := uuid.Parse(req.ParentID)
+	if err != nil {
+		validation.ValidationError(c, err)
+		return
+	}
+
 	in := CreateCategoryInput{
 		Name:     req.Name,
-		ParentID: req.ParentID,
+		ParentID: &ppID,
 	}
 
 	ctx := c.Request.Context()
@@ -61,7 +71,125 @@ func (ch *CategoryHandler) CreateCategory(c *gin.Context) {
 	c.JSON(
 		http.StatusCreated,
 		api.DataResponse{
-			Data: CreateCategoryResponse{
+			Data: CategoryResponse{
+				ID:        category.ID,
+				Name:      category.Name,
+				Slug:      category.Slug,
+				ParentID:  category.ParentID,
+				CreatedAt: category.CreatedAt.Format(time.RFC3339),
+				UpdatedAt: category.UpdatedAt.Format(time.RFC3339),
+			},
+		},
+	)
+}
+
+type CategoryByIDURIParam struct {
+	ID string `uri:"id" binding:"required,uuid"`
+}
+
+type CategoryResponse struct {
+	ID        uuid.UUID  `json:"id" example:"c8ccec1c-ded5-4380-9f78-a1d4eb3d4f28"`
+	Name      string     `json:"name" example:"Electronic"`
+	Slug      string     `json:"slug" example:"electronic"`
+	ParentID  *uuid.UUID `json:"parent_id" example:"c8ccec1c-ded5-4380-9f78-a1d4eb3d4f28"`
+	CreatedAt string     `json:"created_at" example:"2026-06-30T15:47:19Z"`
+	UpdatedAt string     `json:"updated_at" example:"2026-06-30T15:47:19Z"`
+}
+
+// GetCategoryById godoc
+// @Summary get a category by id
+// @Description fetch a category by id
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param id path string true "Category ID (UUID)" format(uuid)
+// @Failure 400 {object} api.ErrorResponse
+// @Failure 404 {object} api.ErrorResponse
+// @Failure 500 {object} api.ErrorResponse
+// @Success 200 {object} api.DataResponse{data=CategoryResponse}
+// @Router /categories/{id} [get]
+func (ch *CategoryHandler) GetCategoryByID(c *gin.Context) {
+	var params CategoryByIDURIParam
+	if err := c.ShouldBindUri(&params); err != nil {
+		validation.ValidationError(c, err)
+		return
+	}
+
+	cuuid, err := uuid.Parse(params.ID)
+	if err != nil {
+		_ = c.Error(
+			security.NewSecureError(
+				http.StatusBadRequest,
+				security.CodeValidation,
+				"invalid id format",
+				err,
+			),
+		)
+		return
+	}
+
+	ctx := c.Request.Context()
+	category, err := ch.cservice.GetCategoryByID(
+		ctx,
+		cuuid,
+	)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(
+		http.StatusOK,
+		api.DataResponse{
+			Data: CategoryResponse{
+				ID:        category.ID,
+				Name:      category.Name,
+				Slug:      category.Slug,
+				ParentID:  category.ParentID,
+				CreatedAt: category.CreatedAt.Format(time.RFC3339),
+				UpdatedAt: category.UpdatedAt.Format(time.RFC3339),
+			},
+		},
+	)
+}
+
+type CategorySlugURIParam struct {
+	Slug string `uri:"slug"`
+}
+
+// GetCategoryBySlug godoc
+// @Summary get a category by slug
+// @Description fetch a category by slug
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param slug path string true "Category slug(string)" format(string)
+// @Failure 400 {object} api.ErrorResponse
+// @Failure 404 {object} api.ErrorResponse
+// @Failure 500 {object} api.ErrorResponse
+// @Success 200 {object} api.DataResponse{data=CategoryResponse}
+// @Router /categories/{slug} [get]
+func (ch *CategoryHandler) GetCategoryBySlug(c *gin.Context) {
+	var params CategorySlugURIParam
+	if err := c.ShouldBindUri(&params); err != nil {
+		validation.ValidationError(c, err)
+		return
+	}
+
+	ctx := c.Request.Context()
+	category, err := ch.cservice.GetCategoryBySlug(
+		ctx,
+		params.Slug,
+	)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(
+		http.StatusOK,
+		api.DataResponse{
+			Data: CategoryResponse{
 				ID:        category.ID,
 				Name:      category.Name,
 				Slug:      category.Slug,

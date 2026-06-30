@@ -1,6 +1,6 @@
 CREATE TABLE categories (
   id UUID PRIMARY KEY NOT NULL,
-  name TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
   slug TEXT UNIQUE NOT NULL,
   parent_id UUID,
   deleted_at TIMESTAMPTZ NULL,
