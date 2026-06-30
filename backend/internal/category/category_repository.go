@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/m-mahmoud-alsaid/prim-backend/internal/model"
+	"github.com/m-mahmoud-alsaid/prim-backend/pkg/api"
 	"github.com/m-mahmoud-alsaid/prim-backend/pkg/database"
 )
 
@@ -119,7 +120,10 @@ func (cr *CategoryRepository) Get(
 func (cr *CategoryRepository) List(
 	ctx context.Context,
 	qe database.QueryExecutor,
-) ([]*model.Category, error) {
+	q *api.PageQuery,
+) ([]*model.Category, *api.Page, error) {
+	offset := (q.Page - 1) * q.PageSize
+
 	query := `
 	SELECT
 		id,
@@ -132,17 +136,40 @@ func (cr *CategoryRepository) List(
 		categories
 	WHERE
 		deleted_at IS NULL
+	LIMIT $1
+	OFFSET $2
 	`
+
+	var total int
+	err := qe.QueryRow(
+		ctx,
+		`
+		SELECT
+			COUNT(id)
+		FROM
+			categories
+		`,
+	).Scan(&total)
+	if err != nil {
+		return nil, nil, fmt.Errorf("list categories: %w", err)
+	}
 
 	rows, err := qe.Query(
 		ctx,
 		query,
+		q.PageSize,
+		offset,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("list categories: %w", err)
+		return nil, nil, fmt.Errorf("list categories: %w", err)
 	}
 
-	var result []*model.Category
+	var result = make(
+		[]*model.Category,
+		0,
+		min(total, q.PageSize),
+	)
+
 	for rows.Next() {
 		var c model.Category
 		err = rows.Scan(
@@ -154,7 +181,7 @@ func (cr *CategoryRepository) List(
 			&c.UpdatedAt,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("list categories: %w", err)
+			return nil, nil, fmt.Errorf("list categories: %w", err)
 		}
 		result = append(
 			result,
@@ -163,8 +190,18 @@ func (cr *CategoryRepository) List(
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("list categories: %w", err)
+		return nil, nil, fmt.Errorf("list categories: %w", err)
 	}
 
-	return result, nil
+	totalPages := (total + q.PageSize - 1) / q.PageSize
+	p := &api.Page{
+		Page:        q.Page,
+		PageSize:    q.PageSize,
+		TotalItems:  total,
+		TotalPages:  totalPages,
+		HasPrevious: q.Page > 1,
+		HasNext:     q.Page < totalPages,
+	}
+
+	return result, p, nil
 }

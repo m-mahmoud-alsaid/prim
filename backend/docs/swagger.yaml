@@ -399,6 +399,20 @@ paths:
       tags:
       - Auth
   /categories:
+    get:
+      consumes:
+      - application/json
+      description: list all categories
+      produces:
+      - application/json
+      responses:
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.ErrorResponse'
+      summary: list all categories
+      tags:
+      - Category
     post:
       consumes:
       - application/json

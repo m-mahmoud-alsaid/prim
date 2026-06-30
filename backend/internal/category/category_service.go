@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/m-mahmoud-alsaid/prim-backend/internal/model"
+	"github.com/m-mahmoud-alsaid/prim-backend/pkg/api"
 	"github.com/m-mahmoud-alsaid/prim-backend/pkg/api/security"
 	"github.com/m-mahmoud-alsaid/prim-backend/pkg/database"
 	"github.com/m-mahmoud-alsaid/prim-backend/pkg/utils"
@@ -178,24 +179,28 @@ func (cs *CategoryService) GetCategoryBySlug(
 
 func (cs *CategoryService) List(
 	ctx context.Context,
-) ([]*model.Category, error) {
+	q *api.PageQuery,
+) ([]*model.Category, *api.Page, error) {
 	var res []*model.Category
+	var page *api.Page
 	err := cs.qexecuter.WithDB(ctx, func(db database.QueryExecutor) error {
-		categories, err := cs.crepository.List(
+		categories, p, err := cs.crepository.List(
 			ctx,
 			db,
+			q,
 		)
 		if err != nil {
 			return err
 		}
 		res = categories
+		page = p
 		return nil
 	})
 	if err != nil {
 		// mappedError := database.MapError(err)
 		switch {
 		default:
-			return nil, security.NewSecureError(
+			return nil, nil, security.NewSecureError(
 				http.StatusInternalServerError,
 				security.CodeInternal,
 				"failed to fetch the categories",
@@ -203,5 +208,5 @@ func (cs *CategoryService) List(
 			)
 		}
 	}
-	return res, nil
+	return res, page, nil
 }

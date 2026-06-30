@@ -210,17 +210,31 @@ func (ch *CategoryHandler) GetCategoryBySlug(c *gin.Context) {
 // @Failure 500 {object} api.ErrorResponse
 // @Router /categories [get]
 func (ch *CategoryHandler) ListCategories(c *gin.Context) {
+	var q api.PageQuery
+	if err := c.ShouldBindQuery(&q); err != nil {
+		validation.ValidationError(c, err)
+		return
+	}
+
+	if q.Page == 0 {
+		q.Page = 1
+	}
+
+	if q.PageSize == 0 {
+		q.PageSize = 10
+	}
 
 	ctx := c.Request.Context()
-	categories, err := ch.cservice.List(
+	categories, page, err := ch.cservice.List(
 		ctx,
+		&q,
 	)
 	if err != nil {
 		_ = c.Error(err)
 		return
 	}
 
-	var res []*CategoryResponse
+	var res = make([]*CategoryResponse, 0, len(categories))
 	for _, c := range categories {
 		res = append(res, &CategoryResponse{
 			ID:        c.ID,
@@ -234,8 +248,9 @@ func (ch *CategoryHandler) ListCategories(c *gin.Context) {
 
 	c.JSON(
 		http.StatusOK,
-		api.DataResponse{
+		api.PaginatedResponse{
 			Data: res,
+			Meta: page,
 		},
 	)
 }
