@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/m-mahmoud-alsaid/prim-backend/internal/auth"
+	"github.com/m-mahmoud-alsaid/prim-backend/internal/category"
 	"github.com/m-mahmoud-alsaid/prim-backend/internal/http/swagger"
 	"github.com/m-mahmoud-alsaid/prim-backend/internal/middleware"
 	"github.com/m-mahmoud-alsaid/prim-backend/internal/notifier"
@@ -124,6 +125,19 @@ func (app *App) setupRoutes(config *config.Config, router *gin.Engine) {
 	)
 
 	userRouter.MapRoutes(v1)
+
+	categoryRepo := category.NewRepository()
+	categoryService := category.NewService(
+		txRunner,
+		categoryRepo,
+	)
+	categoryHandler := category.NewHandler(
+		categoryService,
+	)
+	categoryRouter := category.NewRouter(
+		categoryHandler,
+	)
+	categoryRouter.MapRoutes(v1)
 
 	// inventoryRepo := inventory.NewPostgresRepository()
 	// inventoryService := inventory.NewService(txRunner, inventoryRepo)

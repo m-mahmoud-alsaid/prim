@@ -1,21 +1,13 @@
 CREATE TABLE categories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name CITEXT UNIQUE NOT NULL,
-  slug TEXT UNIQUE NOT NULL CHECK (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+  id UUID PRIMARY KEY NOT NULL,
+  name TEXT UNIQUE NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  parent_id UUID,
   deleted_at TIMESTAMPTZ NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  FOREIGN KEY (parent_id) REFERENCES categories(id)
 );
 
-CREATE OR REPLACE FUNCTION set_updated_at () RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = NOW();
-RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- CREATE INDEX IF NOT EXISTS categories_name_lower_idx ON categories (LOWER(name))
--- WHERE deleted_at IS NULL;
--- CREATE INDEX IF NOT EXISTS categories_name_idx ON categories (name)
--- WHERE deleted_at IS NULL;
-CREATE TRIGGER categories_updated_at
-BEFORE UPDATE ON categories FOR EACH ROW
-EXECUTE FUNCTION set_updated_at ();
+CREATE INDEX IF NOT EXISTS categories_slug_idx ON categories(slug)
+    WHERE deleted_at IS NULL;
