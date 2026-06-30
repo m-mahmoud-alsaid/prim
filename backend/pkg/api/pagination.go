@@ -10,6 +10,6 @@ type Page struct {
 }
 
 type PageQuery struct {
-	Page     int `form:"page"`
-	PageSize int `form:"pageSize"`
+	Page     int `form:"page" example:"1"`
+	PageSize int `form:"pageSize" example:"10"`
 }

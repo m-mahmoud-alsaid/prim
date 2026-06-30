@@ -333,7 +333,45 @@ const docTemplate = `{
                     "Category"
                 ],
                 "summary": "list all categories",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 10,
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/api.PaginatedResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/category.CategoryResponse"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/definitions/api.Page"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -547,11 +585,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "example": 1,
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
+                        "example": 10,
                         "name": "pageSize",
                         "in": "query"
                     }
@@ -694,11 +734,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "example": 1,
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
+                        "example": 10,
                         "name": "pageSize",
                         "in": "query"
                     }
@@ -790,6 +832,35 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "the request sent successfully"
+                }
+            }
+        },
+        "api.Page": {
+            "type": "object",
+            "properties": {
+                "has_next": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "has_previous": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "page": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "page_size": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "total_items": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "total_pages": {
+                    "type": "integer",
+                    "example": 2
                 }
             }
         },

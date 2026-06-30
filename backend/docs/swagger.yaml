@@ -41,6 +41,27 @@ definitions:
         example: the request sent successfully
         type: string
     type: object
+  api.Page:
+    properties:
+      has_next:
+        example: true
+        type: boolean
+      has_previous:
+        example: false
+        type: boolean
+      page:
+        example: 1
+        type: integer
+      page_size:
+        example: 10
+        type: integer
+      total_items:
+        example: 20
+        type: integer
+      total_pages:
+        example: 2
+        type: integer
+    type: object
   api.PaginatedResponse:
     properties:
       data: {}
@@ -403,9 +424,31 @@ paths:
       consumes:
       - application/json
       description: list all categories
+      parameters:
+      - example: 1
+        in: query
+        name: page
+        type: integer
+      - example: 10
+        in: query
+        name: pageSize
+        type: integer
       produces:
       - application/json
       responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/api.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/category.CategoryResponse'
+                  type: array
+                meta:
+                  $ref: '#/definitions/api.Page'
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -535,10 +578,12 @@ paths:
       - application/json
       description: Get all products
       parameters:
-      - in: query
+      - example: 1
+        in: query
         name: page
         type: integer
-      - in: query
+      - example: 10
+        in: query
         name: pageSize
         type: integer
       produces:
@@ -628,10 +673,12 @@ paths:
       - application/json
       description: fetch all the roles using pagination
       parameters:
-      - in: query
+      - example: 1
+        in: query
         name: page
         type: integer
-      - in: query
+      - example: 10
+        in: query
         name: pageSize
         type: integer
       produces:

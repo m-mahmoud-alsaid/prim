@@ -207,7 +207,9 @@ func (ch *CategoryHandler) GetCategoryBySlug(c *gin.Context) {
 // @Tags Category
 // @Accept json
 // @Produce json
+// @Param q query api.PageQuery true "url query"
 // @Failure 500 {object} api.ErrorResponse
+// @Success 200 {object} api.PaginatedResponse{data=[]CategoryResponse,meta=api.Page}
 // @Router /categories [get]
 func (ch *CategoryHandler) ListCategories(c *gin.Context) {
 	var q api.PageQuery
