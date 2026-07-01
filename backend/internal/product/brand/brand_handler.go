@@ -84,5 +84,113 @@ func (bh *BrandHandler) CreateBrand(c *gin.Context) {
 			},
 		},
 	)
+}
 
+type BrandIDParam struct {
+	ID string `uri:"id" binding:"uuid"`
+}
+
+// GetBrandByID godoc
+// @Summary get brand by id
+// @Description get brand by id
+// @Tags Brand
+// @Accept json
+// @Produce json
+// @Param id path BrandIDParam true "Brand id(uuid)"
+// @Failure 404 {object} api.ErrorResponse
+// @Failure 500 {object} api.ErrorResponse
+// @Success 200 {object} api.DataResponse{data=BrandResponse}
+// @Router /brands/{id} [get]
+func (bh *BrandHandler) GetBrandByID(c *gin.Context) {
+	var param BrandIDParam
+	if err := c.ShouldBindUri(&param); err != nil {
+		validation.ValidationError(c, err)
+		return
+	}
+
+	brandID, err := uuid.Parse(param.ID)
+	if err != nil {
+		validation.ValidationError(c, err)
+		return
+	}
+
+	ctx := c.Request.Context()
+	brand, err := bh.bservice.GetBrandByID(
+		ctx,
+		brandID,
+	)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(
+		http.StatusOK,
+		api.DataResponse{
+			Data: BrandResponse{
+				ID:        brand.ID,
+				Name:      brand.Name,
+				LogoURL:   brand.LogoURL,
+				LogoLabel: brand.LogoLabel,
+				CreatedAt: brand.CreatedAt.Format(time.RFC3339),
+				UpdatedAt: brand.UpdatedAt.Format(time.RFC3339),
+			},
+		},
+	)
+}
+
+// ListBrands godoc
+// @Summary list all the brands in pages
+// @Description list all the brands in pages
+// @Tags Brand
+// @Accept json
+// @Produce json
+// @Param q query api.PageQuery true "page query"
+// @Failure 500 {object} api.ErrorResponse
+// @Failure 200 {object} api.PaginatedResponse
+// @Router /brands [get]
+func (bh *BrandHandler) ListBrands(c *gin.Context) {
+	var q api.PageQuery
+	if err := c.ShouldBindQuery(&q); err != nil {
+		validation.ValidationError(c, err)
+		return
+	}
+
+	if q.Page == 0 {
+		q.Page = 1
+	}
+
+	if q.PageSize == 0 {
+		q.PageSize = 10
+	}
+
+	ctx := c.Request.Context()
+	brands, page, err := bh.bservice.List(
+		ctx,
+		&q,
+	)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	var res = make([]*BrandResponse, 0, len(brands))
+	for _, brand := range brands {
+		res = append(res, &BrandResponse{
+			ID:        brand.ID,
+			Name:      brand.Name,
+			LogoURL:   brand.LogoURL,
+			LogoLabel: brand.LogoLabel,
+			CreatedAt: brand.CreatedAt.Format(time.RFC3339),
+			UpdatedAt: brand.UpdatedAt.Format(time.RFC3339),
+		})
+	}
+
+	c.JSON(
+		http.StatusOK,
+		api.PaginatedResponse{
+			Data: res,
+			Meta: page,
+		},
+	)
 }

@@ -5,7 +5,9 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/m-mahmoud-alsaid/prim-backend/internal/model"
+	"github.com/m-mahmoud-alsaid/prim-backend/pkg/api"
 	"github.com/m-mahmoud-alsaid/prim-backend/pkg/api/security"
 	"github.com/m-mahmoud-alsaid/prim-backend/pkg/database"
 )
@@ -74,4 +76,84 @@ func (bs *BrandService) CreateBrand(
 	}
 
 	return brand, nil
+}
+
+func (bs *BrandService) GetBrandByID(
+	ctx context.Context,
+	brandID uuid.UUID,
+) (*model.Brand, error) {
+	var brand *model.Brand
+	err := bs.qexecuter.WithDB(
+		ctx,
+		func(db database.QueryExecutor) error {
+			b, err := bs.brepo.Get(
+				ctx,
+				db,
+				&Filter{
+					ID: &brandID,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			brand = b
+			return nil
+		},
+	)
+	if err != nil {
+		mappedError := database.MapError(err)
+		switch {
+		case errors.Is(
+			mappedError,
+			database.ErrNotFound,
+		):
+			return nil, security.NewSecureError(
+				http.StatusNotFound,
+				security.CodeNotFound,
+				"resource not found",
+				err,
+			)
+		default:
+			return nil, security.NewSecureError(
+				http.StatusInternalServerError,
+				security.CodeInternal,
+				"internal server error",
+				err,
+			)
+		}
+	}
+	return brand, nil
+}
+
+func (bs *BrandService) List(
+	ctx context.Context,
+	q *api.PageQuery,
+) ([]*model.Brand, *api.Page, error) {
+	var res []*model.Brand
+	var page *api.Page
+	err := bs.qexecuter.WithDB(ctx, func(db database.QueryExecutor) error {
+		brands, p, err := bs.brepo.List(
+			ctx,
+			db,
+			q,
+		)
+		if err != nil {
+			return err
+		}
+		res = brands
+		page = p
+		return nil
+	})
+	if err != nil {
+		switch {
+		default:
+			return nil, nil, security.NewSecureError(
+				http.StatusInternalServerError,
+				security.CodeInternal,
+				"failed to fetch the categories",
+				err,
+			)
+		}
+	}
+	return res, page, nil
 }

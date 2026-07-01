@@ -19,4 +19,6 @@ func (r *Router) MapRoutes(
 ) {
 	brands := vgroup.Group("/brands")
 	brands.POST("", r.bh.CreateBrand)
+	brands.GET("", r.bh.ListBrands)
+	brands.GET("/:id", r.bh.GetBrandByID)
 }
