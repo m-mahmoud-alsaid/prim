@@ -167,7 +167,6 @@ func (cr *CategoryRepository) List(
 	var result = make(
 		[]*model.Category,
 		0,
-		min(total, q.PageSize),
 	)
 
 	for rows.Next() {
