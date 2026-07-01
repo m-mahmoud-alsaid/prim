@@ -44,7 +44,7 @@ type BrandResponse struct {
 // @Accept json
 // @Produce json
 // @Param brand body CreateBrandRequest true "brand data"
-// @Failure 404 {object} api.ErrorResponse
+// @Failure 409 {object} api.ErrorResponse
 // @Failure 500 {object} api.ErrorResponse
 // @Success 201 {object} api.DataResponse{data=BrandResponse}
 // @Router /brands [post]

@@ -363,8 +363,8 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "409": {
+                        "description": "Conflict",
                         "schema": {
                             "$ref": "#/definitions/api.ErrorResponse"
                         }
