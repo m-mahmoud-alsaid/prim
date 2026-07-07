@@ -145,12 +145,12 @@ func (bh *BrandHandler) GetBrandByID(c *gin.Context) {
 // @Tags Brand
 // @Accept json
 // @Produce json
-// @Param q query api.PageQuery true "page query"
+// @Param q query api.ListQuery true "page query"
 // @Failure 500 {object} api.ErrorResponse
 // @Failure 200 {object} api.PaginatedResponse{data=[]BrandResponse,meta=api.Page}
 // @Router /brands [get]
 func (bh *BrandHandler) ListBrands(c *gin.Context) {
-	var q api.PageQuery
+	var q api.ListQuery
 	if err := c.ShouldBindQuery(&q); err != nil {
 		validation.ValidationError(c, err)
 		return

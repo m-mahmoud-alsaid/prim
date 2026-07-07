@@ -132,7 +132,7 @@ func (ts *TagService) GetTagByID(
 
 func (ts *TagService) ListTags(
 	ctx context.Context,
-	q *api.PageQuery,
+	q *api.ListQuery,
 ) ([]*model.Tag, *api.Page, error) {
 	var tags []*model.Tag
 	var page *api.Page

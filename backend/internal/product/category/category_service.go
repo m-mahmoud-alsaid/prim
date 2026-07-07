@@ -184,7 +184,7 @@ func (cs *CategoryService) GetCategoryBySlug(
 
 func (cs *CategoryService) List(
 	ctx context.Context,
-	q *api.PageQuery,
+	q *api.ListQuery,
 ) ([]*model.ProductCategory, *api.Page, error) {
 	var res []*model.ProductCategory
 	var page *api.Page

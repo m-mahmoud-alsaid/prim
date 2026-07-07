@@ -108,7 +108,7 @@ func (br *BrandRepository) Get(
 func (br *BrandRepository) List(
 	ctx context.Context,
 	qe database.QueryExecutor,
-	q *api.PageQuery,
+	q *api.ListQuery,
 ) ([]*model.Brand, *api.Page, error) {
 	query := `
 	SELECT

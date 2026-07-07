@@ -19,5 +19,5 @@ func (r *ProductRouter) MapRoutes(vgroup *gin.RouterGroup) {
 	products.GET("", r.ph.GetAllProducts)
 	products.POST("", r.ph.CreateProduct)
 	products.GET("/:id", r.ph.GetProductByID)
-	products.GET("/:slug", r.ph.GetProductBySlug)
+	products.GET("/slug/:slug", r.ph.GetProductBySlug)
 }

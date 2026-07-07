@@ -137,7 +137,7 @@ func (bs *BrandService) GetBrandByID(
 
 func (bs *BrandService) List(
 	ctx context.Context,
-	q *api.PageQuery,
+	q *api.ListQuery,
 ) ([]*model.Brand, *api.Page, error) {
 	var res []*model.Brand
 	var page *api.Page

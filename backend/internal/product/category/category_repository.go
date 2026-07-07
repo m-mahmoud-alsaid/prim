@@ -120,7 +120,7 @@ func (cr *CategoryRepository) Get(
 func (cr *CategoryRepository) List(
 	ctx context.Context,
 	qe database.QueryExecutor,
-	q *api.PageQuery,
+	q *api.ListQuery,
 ) ([]*model.ProductCategory, *api.Page, error) {
 	offset := (q.Page - 1) * q.PageSize
 

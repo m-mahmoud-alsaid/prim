@@ -175,7 +175,7 @@ func (s *ProductService) GetBySlug(
 
 func (s *ProductService) List(
 	ctx context.Context,
-	q *api.PageQuery,
+	q *api.ListQuery,
 ) ([]*ProductListItem, *api.Page, error) {
 	var products []*ProductListItem
 	var page *api.Page

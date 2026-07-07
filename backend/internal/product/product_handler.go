@@ -82,13 +82,13 @@ func NewHandler(
 // @Tags Products
 // @Accept json
 // @Produce json
-// @Param query query api.PageQuery true "Pagination query"
+// @Param query query api.ListQuery true "Pagination query"
 // @Success 200 {object} api.SuccessResponse
 // @Failure 400 {object} api.BadReqResponse
 // @Failure 500 {object} api.ErrorResponse
 // @Router /products [get]
 func (h *ProductHandler) GetAllProducts(c *gin.Context) {
-	query := &api.PageQuery{}
+	query := &api.ListQuery{}
 	if err := c.ShouldBindQuery(query); err != nil {
 		validation.ValidationError(c, err)
 		return

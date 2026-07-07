@@ -173,7 +173,7 @@ type ProductListItem struct {
 func (r *ProductRepository) List(
 	ctx context.Context,
 	qe database.QueryExecutor,
-	q *api.PageQuery,
+	q *api.ListQuery,
 ) ([]*ProductListItem, *api.Page, error) {
 	query := `
 		SELECT
