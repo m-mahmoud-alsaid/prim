@@ -3,6 +3,16 @@ import { CustomButton, CustomInput, Checkbox, Text } from "@/components/ui";
 export default function AddressForm({ add, addAddress }) {
 	const formFields = [
 		{
+			id: "address-label-12ksdf",
+			labelTitle: "Address Label",
+			input: {
+				type: "text",
+				placeholder: "Home || Work || Other",
+				isRequired: true,
+				onChange: () => {},
+			},
+		},
+		{
 			id: "fullName-12ksdf",
 			labelTitle: "Full Name",
 			input: {
