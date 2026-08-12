@@ -25,18 +25,17 @@ export default function ReviewCard({ reviewDetails }) {
 				</span>
 			</p>
 			<div className="flex flex-col md:flex-row gap-2.5">
-				<div className="flex-1 bg-primary text-primary-foreground rounded-md hover:bg-accent hover:text-accent-foreground">
+				<div className="flex-1">
 					<CustomButton
 						text={t("reviews.editReview")}
 						onClick={() => {}}
 					/>
 				</div>
-				<div className="flex-1 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive-hover hover:text-destructive-foreground-hover">
-					<CustomButton
-						text={t("reviews.delete")}
-						onClick={() => {}}
-					/>
-				</div>
+				<CustomButton
+					text={t("reviews.delete")}
+					onClick={() => {}}
+					className="flex-1 bg-destructive text-destructive-foreground rounded-md hover:bg-destructive-hover hover:text-destructive-foreground-hover"
+				/>
 			</div>
 		</div>
 	);

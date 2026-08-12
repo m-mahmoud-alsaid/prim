@@ -6,9 +6,10 @@ import { About } from "@/features/about";
 import { Wishlist } from "@/features/wishlist";
 import { Settings } from "@/features/settings";
 import { Reviews } from "@/features/reviews";
+import { Address } from "@/features/address";
 import { Auth, Login, Verify } from "@/features/auth";
 import { NotFound } from "@/app/pages/notFound";
-import { User, Payment, Overview, Orders, Address } from "@/features/user";
+import { User, Payment, Overview, Orders } from "@/features/user";
 
 function Router() {
 	return (

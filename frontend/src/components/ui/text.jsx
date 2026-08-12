@@ -1,7 +1,7 @@
-export function Text({ text, className }) {
+export function Text({ text, className, textColor }) {
 	return (
 		<p
-			className={`${className} text-foreground text-txt-sm md:text-txt-md lg:text-txt-lg`}
+			className={`${className} ${textColor || "text-foreground"} text-txt-sm md:text-txt-md lg:text-txt-lg`}
 		>
 			{text}
 		</p>

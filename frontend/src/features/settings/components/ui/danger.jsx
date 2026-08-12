@@ -18,12 +18,12 @@ export default function DangerZone() {
 	return (
 		<div className="flex flex-col gap-2.5 border-t border-b border-destructive border-dashed pt-5 pb-5">
 			{dangerActions.map((action) => (
-				<div
+				<CustomButton
 					key={action.id}
-					className="mr-auto bg-destructive text-destructive-foreground rounded-md hover:scale-90 w-fit"
-				>
-					<CustomButton text={t(`settings.${action.buttonText}`)} />
-				</div>
+					text={t(`settings.${action.buttonText}`)}
+					onClick={() => {}}
+					className="bg-destructive text-destructive-foreground rounded-md hover:bg-destructive-hover hover:text-destructive-foreground-hover"
+				/>
 			))}
 		</div>
 	);

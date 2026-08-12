@@ -4,6 +4,7 @@ export function CustomInput({
 	isDisabled,
 	placeholder,
 	onChange,
+	className,
 }) {
 	return (
 		<input
@@ -12,7 +13,7 @@ export function CustomInput({
 			onChange={onChange}
 			value={value}
 			disabled={isDisabled}
-			className="p-2.5 truncate w-full text-txt-sm md:text-txt-md lg:text-txt-lg placeholder:text-muted-foreground disabled:text-muted-foreground"
+			className={`${className} p-2.5 truncate text-txt-sm md:text-txt-md lg:text-txt-lg placeholder:text-muted-foreground disabled:text-muted-foreground`}
 		/>
 	);
 }

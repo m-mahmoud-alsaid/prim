@@ -79,17 +79,14 @@ export default function PersonalInfoForm() {
 					<div className="whitespace-nowrap mb-0.5">
 						<Text text={t(`settings.${info.labelTitle}`)} />
 					</div>
-					<div className="lg:w-64 bg-input-background rounded-sm">
-						<CustomInput
-							type={info.input.type}
-							placeholder={t(
-								`settings.${info.input.placeholder}`,
-							)}
-							value={info.input.value}
-							isDisabled={info.input.isDisabled}
-							onChange={info.input.onChange}
-						/>
-					</div>
+					<CustomInput
+						type={info.input.type}
+						placeholder={t(`settings.${info.input.placeholder}`)}
+						value={info.input.value}
+						isDisabled={info.input.isDisabled}
+						onChange={info.input.onChange}
+						className="lg:w-64 bg-input-background rounded-sm"
+					/>
 				</label>
 			))}
 			<div className="ml-auto flex justify-center bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground rounded-md">

@@ -1,5 +1,5 @@
 import SideBarTitle from "@/features/products/components/ui/sideBarTitle";
-import FilterCheckbox from "@/features/products/components/ui/filterCheckbox";
+import { Checkbox } from "@/components/ui/Checkbox";
 
 export default function SideBarDiscount() {
 	const discounts = [
@@ -22,10 +22,7 @@ export default function SideBarDiscount() {
 			<SideBarTitle title="discount" />
 			<div className="flex flex-col gap-2.5">
 				{discounts.map((discount) => (
-					<FilterCheckbox
-						key={discount.id}
-						labelTxt={discount.discount}
-					/>
+					<Checkbox key={discount.id} labelTxt={discount.discount} />
 				))}
 			</div>
 		</div>

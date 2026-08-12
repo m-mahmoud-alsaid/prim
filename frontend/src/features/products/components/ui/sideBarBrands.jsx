@@ -1,5 +1,5 @@
 import SideBarTitle from "@/features/products/components/ui/sideBarTitle";
-import FilterCheckbox from "@/features/products/components/ui/filterCheckbox";
+import { Checkbox } from "@/components/ui/Checkbox";
 
 export default function SideBarBrands() {
 	const brands = [
@@ -26,7 +26,7 @@ export default function SideBarBrands() {
 			<SideBarTitle title="brands" />
 			<div className="flex flex-col gap-2.5">
 				{brands.map((brand) => (
-					<FilterCheckbox key={brand.id} labelTxt={brand.brand} />
+					<Checkbox key={brand.id} labelTxt={brand.brand} />
 				))}
 			</div>
 			<p className="mt-2.5 text-accent-brand hover:underline hover:underline-offset-2 cursor-pointer font-medium">
